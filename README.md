@@ -16,3 +16,10 @@ To ensure safe access to shared data, you can use mutex locks.
 ### Solution
 
  - [Multithreaded Implementation In C](./bankers_algorithm.c)
+
+### TODO
+ 
+ - Input Parsing
+ - Safe Sequence Find
+ - Threads
+ - Makefile
