@@ -19,7 +19,6 @@ To ensure safe access to shared data, you can use mutex locks.
 
 ### TODO
  
- - Input Parsing
  - Safe Sequence Find
  - Threads
  - Makefile
