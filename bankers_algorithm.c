@@ -36,4 +36,52 @@
 
 int main(int argc, char** argv) {
 	// input parsing	
+	int nProcesses,
+	    nResources;
+
+	printf("No. of Processes : ");
+	scanf("%d", &nProcesses);
+
+	printf("No. of Resources : ");
+	scanf("%d", &nResources);
+
+	int resources[nResources];
+	for(int i=0; i<nResources; i++)
+		scanf("%d", &resources[i]);
+
+	int allocated[nProcesses][nResources];
+	for(int i=0; i<nProcesses; i++)
+		for(int j=0; j<nResources; j++)
+			scanf("%d", &allocated[i][j]);
+
+	int maxRequired[nProcesses][nResources];
+	for(int i=0; i<nProcesses; i++)
+		for(int j=0; j<nResources; j++)
+			scanf("%d", &maxRequired[i][j]);
+
+	// testing input
+	printf("\n\nProcesses = %d", nProcesses);
+	printf("\nResources = %d", nResources);
+
+	printf("\nAvailable Resource : ");
+	for(int i=0; i<nResources; i++)
+		printf("%3d", resources[i]);
+	printf("\n");
+
+	printf("\nAllocation Matrix\n");
+	for(int i=0; i<nProcesses; i++) {
+		for(int j=0; j<nResources; j++) {
+			printf("%3d", allocated[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+
+	printf("\nMax Required Matrix\n");
+	for(int i=0; i<nProcesses; i++) {
+		for(int j=0; j<nResources; j++) {
+			printf("%3d", maxRequired[i][j]);
+		}
+		printf("\n");
+	}
 }
