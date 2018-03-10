@@ -34,6 +34,10 @@
 
 */
 
+void getSafeSeq() {
+	//need access to variables
+}
+
 int main(int argc, char** argv) {
 	// input parsing	
 	int nProcesses,
