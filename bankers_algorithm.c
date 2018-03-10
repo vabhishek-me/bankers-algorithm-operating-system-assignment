@@ -1,7 +1,14 @@
 // Write a multithreaded program that implements the banker's algorithm. Create n threads that request and release resources from the bank. The banker will grant the request only if it leaves the system in a safe state. It is important that shared data be safe from concurrent access. To ensure safe access to shared data, you can use mutex locks.
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
+
+int nResources,
+    nProcesses;
+int *resources;
+int **allocated;
+int **maxRequired;
 
 /* Sample Test Case
 
@@ -39,29 +46,40 @@ void getSafeSeq() {
 }
 
 int main(int argc, char** argv) {
-	// input parsing	
-	int nProcesses,
-	    nResources;
+        printf("\nNumber of processes? ");
+        scanf("%d", &nProcesses);
 
-	printf("No. of Processes : ");
-	scanf("%d", &nProcesses);
+        printf("\nNumber of resources? ");
+        scanf("%d", &nResources);
 
-	printf("No. of Resources : ");
-	scanf("%d", &nResources);
+        resources = (int *)malloc(nResources * sizeof(*resources));
+        printf("\nCurrently Available resources (R1 R2 ...)? ");
+        for(int i=0; i<nResources; i++)
+                scanf("%d", &resources[i]);
 
-	int resources[nResources];
-	for(int i=0; i<nResources; i++)
-		scanf("%d", &resources[i]);
+        allocated = (int **)malloc(nProcesses * sizeof(*allocated));
+        for(int i=0; i<nProcesses; i++)
+                allocated[i] = (int *)malloc(nResources * sizeof(**allocated));
 
-	int allocated[nProcesses][nResources];
-	for(int i=0; i<nProcesses; i++)
-		for(int j=0; j<nResources; j++)
-			scanf("%d", &allocated[i][j]);
+        maxRequired = (int **)malloc(nProcesses * sizeof(*maxRequired));
+        for(int i=0; i<nProcesses; i++)
+                maxRequired[i] = (int *)malloc(nResources * sizeof(**maxRequired));
 
-	int maxRequired[nProcesses][nResources];
-	for(int i=0; i<nProcesses; i++)
-		for(int j=0; j<nResources; j++)
-			scanf("%d", &maxRequired[i][j]);
+        //allocated
+        printf("\n");
+        for(int i=0; i<nProcesses; i++) {
+                printf("\nResource allocated to process %d (R1 R2 ...)? ", i+1);
+                for(int j=0; j<nResources; j++)
+                        scanf("%d", &allocated[i][j]);
+        }
+
+        printf("\n");
+        for(int i=0; i<nProcesses; i++) {
+                printf("\nMaximum resource required by process %d (R1 R2 ...)? ", i+1);
+                for(int j=0; j<nResources; j++)
+                        scanf("%d", &maxRequired[i][j]);
+        }
+        printf("\n");
 
 	// testing input
 	printf("\n\nProcesses = %d", nProcesses);
@@ -88,4 +106,17 @@ int main(int argc, char** argv) {
 		}
 		printf("\n");
 	}
+
+	// get safe sequence
+	
+	// run threads
+	
+	// free resources
+        free(resources);
+        for(int i=0; i<nProcesses; i++) {
+                free(allocated[i]);
+                free(maxRequired[i]);
+        }
+        free(allocated);
+        free(maxRequired);
 }
