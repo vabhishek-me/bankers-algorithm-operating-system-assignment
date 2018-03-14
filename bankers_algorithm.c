@@ -9,40 +9,11 @@ int nResources,
 int *resources;
 int **allocated;
 int **maxRequired;
-
-/* Sample Test Case
-
-   no. of processes = 5
-   no. of resources = 3
-
-   available resources = 3 3 2
-
-   allocation matrix
-   [ 0 1 0
-     2 0 0
-     3 0 2
-     2 1 1
-     0 0 2 ]
-
-   maximum required resources matrix
-   [ 7 5 3
-     3 2 2
-     9 0 2
-     2 2 2
-     4 3 3 ]
-
-
-   need matrix (to calculate) {max - alloc}
-   [ 7 4 3
-     1 2 2
-     6 0 0
-     0 1 1
-     4 3 1 ]
-
-*/
+int **need;
+int *safeSeq;
 
 void getSafeSeq() {
-	//need access to variables
+	// get safe sequence - use safeSeq[]
 }
 
 int main(int argc, char** argv) {
@@ -65,15 +36,16 @@ int main(int argc, char** argv) {
         for(int i=0; i<nProcesses; i++)
                 maxRequired[i] = (int *)malloc(nResources * sizeof(**maxRequired));
 
-        //allocated
+        // allocated
         printf("\n");
         for(int i=0; i<nProcesses; i++) {
                 printf("\nResource allocated to process %d (R1 R2 ...)? ", i+1);
                 for(int j=0; j<nResources; j++)
                         scanf("%d", &allocated[i][j]);
         }
-
         printf("\n");
+
+	// maximum required resources
         for(int i=0; i<nProcesses; i++) {
                 printf("\nMaximum resource required by process %d (R1 R2 ...)? ", i+1);
                 for(int j=0; j<nResources; j++)
@@ -81,31 +53,14 @@ int main(int argc, char** argv) {
         }
         printf("\n");
 
-	// testing input
-	printf("\n\nProcesses = %d", nProcesses);
-	printf("\nResources = %d", nResources);
+	// calculate need matrix
+        need = (int **)malloc(nProcesses * sizeof(*need));
+        for(int i=0; i<nProcesses; i++)
+                need[i] = (int *)malloc(nResources * sizeof(**need));
 
-	printf("\nAvailable Resource : ");
-	for(int i=0; i<nResources; i++)
-		printf("%3d", resources[i]);
-	printf("\n");
-
-	printf("\nAllocation Matrix\n");
-	for(int i=0; i<nProcesses; i++) {
-		for(int j=0; j<nResources; j++) {
-			printf("%3d", allocated[i][j]);
-		}
-		printf("\n");
-	}
-	printf("\n");
-
-	printf("\nMax Required Matrix\n");
-	for(int i=0; i<nProcesses; i++) {
-		for(int j=0; j<nResources; j++) {
-			printf("%3d", maxRequired[i][j]);
-		}
-		printf("\n");
-	}
+        for(int i=0; i<nProcesses; i++)
+                for(int j=0; j<nResources; j++)
+                        need[i][j] = maxRequired[i][j] - allocated[i][j];
 
 	// get safe sequence
 	
@@ -116,7 +71,10 @@ int main(int argc, char** argv) {
         for(int i=0; i<nProcesses; i++) {
                 free(allocated[i]);
                 free(maxRequired[i]);
+		free(need[i]);
         }
         free(allocated);
         free(maxRequired);
+	free(need);
+        free(safeSeq);
 }
