@@ -1,4 +1,4 @@
-// Write a multithreaded program that implements the banker's algorithm. Create n threads that request and release resources from the bank. The banker will grant the request only if it leaves the system in a safe state. It is important that shared data be safe from concurrent access. To ensure safe access to shared data, you can use mutex locks.
+// A Multithreaded Program that implements the banker's algorithm.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,8 +15,43 @@ int **need;
 int *safeSeq;
 
 bool getSafeSeq() {
-	// get safe sequence - use safeSeq[]
-	return true;
+	// get safe sequence
+        int tempRes[nResources];
+        for(int i=0; i<nResources; i++) tempRes[i] = resources[i];
+
+        bool finished[nProcesses];
+        for(int i=0; i<nProcesses; i++) finished[i] = false;
+        int nfinished=0;
+        while(nfinished < nProcesses) {
+                bool safe = false;
+
+                for(int i=0; i<nProcesses; i++) {
+                        if(!finished[i]) {
+                                bool possible = true;
+
+                                for(int j=0; j<nResources; j++)
+                                        if(need[i][j] > tempRes[j]) {
+                                                possible = false;
+                                                break;
+                                        }
+
+                                if(possible) {
+                                        for(int j=0; j<nResources; j++)
+                                                tempRes[j] += allocated[i][j];
+                                        safeSeq[nfinished] = i;
+                                        finished[i] = true;
+                                        ++nfinished;
+                                        safe = true;
+                                }
+                        }
+                }
+
+                if(!safe) {
+                        for(int k=0; k<nProcesses; k++) safeSeq[k] = -1;
+                        return false;
+                }
+        }
+        return true;
 }
 
 void* processCode(void* arg) {
