@@ -14,45 +14,10 @@ int **maxRequired;
 int **need;
 int *safeSeq;
 
-bool getSafeSeq() {
-	// get safe sequence
-        int tempRes[nResources];
-        for(int i=0; i<nResources; i++) tempRes[i] = resources[i];
+pthread_mutex_t lockResources;
 
-        bool finished[nProcesses];
-        for(int i=0; i<nProcesses; i++) finished[i] = false;
-        int nfinished=0;
-        while(nfinished < nProcesses) {
-                bool safe = false;
-
-                for(int i=0; i<nProcesses; i++) {
-                        if(!finished[i]) {
-                                bool possible = true;
-
-                                for(int j=0; j<nResources; j++)
-                                        if(need[i][j] > tempRes[j]) {
-                                                possible = false;
-                                                break;
-                                        }
-
-                                if(possible) {
-                                        for(int j=0; j<nResources; j++)
-                                                tempRes[j] += allocated[i][j];
-                                        safeSeq[nfinished] = i;
-                                        finished[i] = true;
-                                        ++nfinished;
-                                        safe = true;
-                                }
-                        }
-                }
-
-                if(!safe) {
-                        for(int k=0; k<nProcesses; k++) safeSeq[k] = -1;
-                        return false;
-                }
-        }
-        return true;
-}
+// get safe sequence is there is one else return false
+bool getSafeSeq();
 
 void* processCode(void* arg) {
 	// thread code
@@ -144,4 +109,45 @@ int main(int argc, char** argv) {
         free(maxRequired);
 	free(need);
         free(safeSeq);
+}
+
+
+bool getSafeSeq() {
+	// get safe sequence
+        int tempRes[nResources];
+        for(int i=0; i<nResources; i++) tempRes[i] = resources[i];
+
+        bool finished[nProcesses];
+        for(int i=0; i<nProcesses; i++) finished[i] = false;
+        int nfinished=0;
+        while(nfinished < nProcesses) {
+                bool safe = false;
+
+                for(int i=0; i<nProcesses; i++) {
+                        if(!finished[i]) {
+                                bool possible = true;
+
+                                for(int j=0; j<nResources; j++)
+                                        if(need[i][j] > tempRes[j]) {
+                                                possible = false;
+                                                break;
+                                        }
+
+                                if(possible) {
+                                        for(int j=0; j<nResources; j++)
+                                                tempRes[j] += allocated[i][j];
+                                        safeSeq[nfinished] = i;
+                                        finished[i] = true;
+                                        ++nfinished;
+                                        safe = true;
+                                }
+                        }
+                }
+
+                if(!safe) {
+                        for(int k=0; k<nProcesses; k++) safeSeq[k] = -1;
+                        return false;
+                }
+        }
+        return true;
 }
