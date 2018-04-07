@@ -21,6 +21,16 @@ To ensure safe access to shared data, you can use mutex locks.
 
  - [Multithreaded Implementation In C](./bankers_algorithm.c)
 
+### Compile Manually
+
+```bash
+# compile
+gcc bankers_algorithm.c -std=c99 -pthread -o bankers_algorithm
+
+# execute
+./bankers_algorithm
+```
+
 
 ### Input
 ```
