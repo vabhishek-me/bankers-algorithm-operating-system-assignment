@@ -94,8 +94,11 @@ int main(int argc, char** argv) {
         pthread_attr_t attr;
         pthread_attr_init(&attr);
 
+	int processNumber[nProcesses];
+	for(int i=0; i<nProcesses; i++) processNumber[i] = i;
+
         for(int i=0; i<nProcesses; i++)
-                pthread_create(&processes[i], &attr, processCode, (void *)i);
+                pthread_create(&processes[i], &attr, processCode, (void *)(&processNumber[i]));
 
         for(int i=0; i<nProcesses; i++)
                 pthread_join(processes[i], NULL);
@@ -158,7 +161,7 @@ bool getSafeSeq() {
 
 // process code
 void* processCode(void *arg) {
-        int p = (int *) arg;
+        int p = *((int *) arg);
 
 	// lock resources
         pthread_mutex_lock(&lockResources);
