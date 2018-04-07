@@ -14,16 +14,19 @@ int **allocated;
 int **maxRequired;
 int **need;
 int *safeSeq;
+int nProcessRan = 0;
 
 pthread_mutex_t lockResources;
+pthread_cond_t condition;
 
 // get safe sequence is there is one else return false
 bool getSafeSeq();
 // process function
 void* processCode(void* );
 
-
 int main(int argc, char** argv) {
+	srand(time(NULL));
+
         printf("\nNumber of processes? ");
         scanf("%d", &nProcesses);
 
@@ -83,25 +86,21 @@ int main(int argc, char** argv) {
                 printf("%-3d", safeSeq[i]+1);
         }
 
-        for(int i=0; i<nProcesses; i++) {
-		processCode((void *)safeSeq[i]);
-	}
-
         printf("\nExecuting Processes...\n\n");
         sleep(1);
 	
 	// run threads
-//	pthread_t processes[nProcesses];
-//        pthread_attr_t attr;
-//        pthread_attr_init(&attr);
-//
-//        for(int i=0; i<nProcesses; i++)
-//                pthread_create(&processes[i], &attr, processCode, (void *)i);
-//
-//        for(int i=0; i<nProcesses; i++)
-//                pthread_join(processes[i], NULL);
-//
-//        printf("\nAll Processes Finished\n");	
+	pthread_t processes[nProcesses];
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+
+        for(int i=0; i<nProcesses; i++)
+                pthread_create(&processes[i], &attr, processCode, (void *)i);
+
+        for(int i=0; i<nProcesses; i++)
+                pthread_join(processes[i], NULL);
+
+        printf("\nAll Processes Finished\n");	
 	
 	// free resources
         free(resources);
@@ -151,17 +150,22 @@ bool getSafeSeq() {
 
                 if(!safe) {
                         for(int k=0; k<nProcesses; k++) safeSeq[k] = -1;
-                        return false;
+                        return false; // no safe sequence found
                 }
         }
-        return true;
+        return true; // safe sequence found
 }
 
 // process code
 void* processCode(void *arg) {
         int p = (int *) arg;
 
-	// need synchronization
+	// lock resources
+        pthread_mutex_lock(&lockResources);
+
+        // condition check
+        while(p != safeSeq[nProcessRan])
+                pthread_cond_wait(&condition, &lockResources);
 
 	// process
         printf("\n--> Process %d", p+1);
@@ -199,5 +203,9 @@ void* processCode(void *arg) {
 
         sleep(1);
 
-	// pthread_exit(NULL);
+	// condition broadcast
+        nProcessRan++;
+        pthread_cond_broadcast(&condition);
+        pthread_mutex_unlock(&lockResources);
+	pthread_exit(NULL);
 }
