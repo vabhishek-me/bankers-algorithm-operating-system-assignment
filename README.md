@@ -2,10 +2,7 @@
 
 Assignment
 
-CSE 316 - Operating Systems Class
-
-Lovely Professional University
-
+Operating Systems
 ---
 
 
